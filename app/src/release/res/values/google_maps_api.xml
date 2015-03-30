@@ -1,0 +1,18 @@
+<resources>
+    <string name="google_maps_key_instructions" templateMergeStrategy="replace"><!--
+
+    TODO: Before you run your application, you need a Google Maps API key.
+
+    To get one, follow this link, follow the directions and press "Create" at the end:
+
+https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=80:FA:7C:3D:AC:87:22:F8:2F:F9:22:57:EB:AE:1D:3A:90:F0:CA:6F%3Bmooklabs.ivdconnect
+
+    You can also add your credentials to an existing key, using this line:
+    80:FA:7C:3D:AC:87:22:F8:2F:F9:22:57:EB:AE:1D:3A:90:F0:CA:6F;mooklabs.ivdconnect
+
+    Once you have your key (it starts with "AIza"), replace the "google_maps_key"
+    string in this file.
+    --></string>
+
+    <string name="google_maps_key" templateMergeStrategy="preserve">YOUR_KEY_HERE</string>
+</resources>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">IVDconnect</string>
+    <string name="title_section1">Map</string>
+    <string name="title_section2">Stats</string>
+    <string name="title_section3">Hud Settings</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_example">Example action</string>
+    <string name="action_settings">App Settings</string>
+    <string name="title_activity_maps">Map activity</string>
+    <string name="button_label">buttonlabel</string>
+    <string name="pref_summary">prefsummary</string>
+    <string name="pref_name">prefname</string>
+
+
+</resources>
