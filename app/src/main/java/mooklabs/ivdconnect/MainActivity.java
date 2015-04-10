@@ -1,28 +1,29 @@
 package mooklabs.ivdconnect;
 
 import android.app.Activity;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
+import android.bluetooth.BluetoothAdapter;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.content.Context;
-import android.os.Build;
-import android.os.Bundle;
-import android.view.Gravity;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.support.v4.widget.DrawerLayout;
-import android.widget.ArrayAdapter;
-import android.widget.GridLayout;
-import android.widget.TextView;
+
+import com.chiralcode.colorpicker.ColorPicker;
 
 
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
+    private static final int REQUEST_ENABLE_BT = 1;
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -33,9 +34,13 @@ public class MainActivity extends ActionBarActivity
      */
     private CharSequence mTitle;
 
+    private static MainActivity thisact;
+    public BluetoothAdapter mBluetoothAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        thisact = this;
         setContentView(R.layout.activity_main);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
@@ -44,8 +49,24 @@ public class MainActivity extends ActionBarActivity
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
-                R.id.navigation_drawer,
-                (DrawerLayout) findViewById(R.id.drawer_layout));
+                R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout));
+
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        if (mBluetoothAdapter == null)
+            System.out.println("no bluetoth");
+            //System.exit(1);            // Device does not support Bluetooth
+
+        if (!mBluetoothAdapter.isEnabled()) {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+        }
+        SharedPreferences sharedPref = this.getSharedPreferences(getString(R.string.PREFERENCE_FILE_KEY), Context.MODE_PRIVATE);
+
+        ((ColorPicker) (this.getParent().findViewById(R.id.colorPickerLeft))).setColor (sharedPref.getInt("leftcolor",  0));
+        ((ColorPicker) (this.getParent().findViewById(R.id.colorPickerRight))).setColor(sharedPref.getInt("rightcolor", 0));
+
+
     }
 
     @Override
@@ -55,15 +76,15 @@ public class MainActivity extends ActionBarActivity
         position++;
         switch (position) {
             case 1:
-                System.err.println("1--");
+                System.out.println("1");
                 fragmentManager.beginTransaction().replace(R.id.container, MapFragment.newInstance(position)).commit();
                 break;
             case 2:
-                System.err.println("2--");
+                System.out.println("2");
                 fragmentManager.beginTransaction().replace(R.id.container, StatsFragment.newInstance(position)).commit();
                 break;
             case 3:
-                System.err.println("3--");
+                System.out.println("3");
                 fragmentManager.beginTransaction().replace(R.id.container, HudFragment.newInstance(position)).commit();
                 break;
         }
@@ -72,15 +93,12 @@ public class MainActivity extends ActionBarActivity
     public void onSectionAttached(int number) {
         switch (number) {
             case 1:
-                System.err.println("1");
                 mTitle = getString(R.string.title_section1);
                 break;
             case 2:
-                System.err.println("2");
                 mTitle = getString(R.string.title_section2);
                 break;
             case 3:
-                System.err.println("3");
                 mTitle = getString(R.string.title_section3);
                 break;
         }
@@ -91,6 +109,7 @@ public class MainActivity extends ActionBarActivity
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(mTitle);
+
     }
 
 
@@ -118,8 +137,21 @@ public class MainActivity extends ActionBarActivity
         if (id == R.id.action_settings) {
             return true;
         }
-
+        try {
+            this.findViewById(R.id.colorPickerLeft).setBackgroundColor(((ColorPicker) (this.findViewById(R.id.colorPickerLeft))).getColor());
+            this.findViewById(R.id.colorPickerRight).setBackgroundColor(((ColorPicker) (this.findViewById(R.id.colorPickerRight))).getColor());
+            SharedPreferences sharedPref = this.getSharedPreferences(getString(R.string.PREFERENCE_FILE_KEY), Context.MODE_PRIVATE);
+            sharedPref.edit().putInt("leftcolor",((ColorPicker) (this.findViewById(R.id.colorPickerLeft))).getColor());
+            sharedPref.edit().putInt("rightcolor",((ColorPicker) (this.findViewById(R.id.colorPickerRight))).getColor());
+            sharedPref.edit().apply();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
         return super.onOptionsItemSelected(item);
+    }
+    public void updateColors(){
+        this.findViewById(R.id.colorPickerLeft).setBackgroundColor(((ColorPicker) (this.findViewById(R.id.colorPickerLeft))).getColor());
+        this.findViewById(R.id.colorPickerRight).setBackgroundColor(((ColorPicker) (this.findViewById(R.id.colorPickerRight))).getColor());
     }
 
     /**
@@ -233,11 +265,12 @@ public class MainActivity extends ActionBarActivity
         }
 
 
-
         @Override
         public void onAttach(Activity activity) {
             super.onAttach(activity);
             ((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
+            ((MainActivity) activity).updateColors();
+
         }
     }
 }
